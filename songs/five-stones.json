@@ -1,0 +1,124 @@
+{
+ "id": "five-stones",
+ "title": "Five Stones (Tutorial 1)",
+ "composer": "Notefall contributors (original)",
+ "year": "2026",
+ "license": "original",
+ "source": "Original composition",
+ "bpm": 72,
+ "beatsPerBar": 4,
+ "difficulty": 1,
+ "notes": [
+  [
+   0,
+   1,
+   "D5"
+  ],
+  [
+   1,
+   1,
+   "D5"
+  ],
+  [
+   2,
+   1,
+   "F5"
+  ],
+  [
+   3,
+   1,
+   "F5"
+  ],
+  [
+   4,
+   2,
+   "A5"
+  ],
+  [
+   6,
+   2,
+   "F5"
+  ],
+  [
+   8,
+   1,
+   "A5"
+  ],
+  [
+   9,
+   1,
+   "A5"
+  ],
+  [
+   10,
+   1,
+   "B5"
+  ],
+  [
+   11,
+   1,
+   "B5"
+  ],
+  [
+   12,
+   4,
+   "D6"
+  ],
+  [
+   16,
+   1,
+   "D6"
+  ],
+  [
+   17,
+   1,
+   "A5"
+  ],
+  [
+   18,
+   1,
+   "B5"
+  ],
+  [
+   19,
+   1,
+   "A5"
+  ],
+  [
+   20,
+   2,
+   "F5"
+  ],
+  [
+   22,
+   2,
+   "A5"
+  ],
+  [
+   24,
+   1,
+   "F5"
+  ],
+  [
+   25,
+   1,
+   "A5"
+  ],
+  [
+   26,
+   1,
+   "F5"
+  ],
+  [
+   27,
+   1,
+   "D5"
+  ],
+  [
+   28,
+   4,
+   "D5"
+  ]
+ ],
+ "provenance": "Uses only the five base notes."
+}

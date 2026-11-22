@@ -1,0 +1,73 @@
+# Notefall
+
+A free, open-source play-along rhythm game that **listens**. Notes fall down five lanes; you play them on your instrument and Notefall hears the pitch through the microphone and scores your timing.
+
+Any melodic instrument works: a real ocarina, a recorder, a tin whistle, whistling or humming, or a wind instrument inside a video game played through your TV speakers.
+
+**Play it:** `https://YOUR_USERNAME.github.io/notefall/`
+
+## Features
+
+- Real-time pitch detection (YIN) in the browser. No install, no account, works on phones.
+- Scrolling note highway with Perfect / Great / Good timing, combos and a hold bonus for long notes.
+- Practice tools: speed control (50–125%) and **wait mode**, where the song pauses until you play the right note.
+- Two label styles: **5-button controller hints** (L R A Y X plus stick and D-pad bends) or plain **note names**.
+- A library of public-domain melodies and original tutorial songs.
+- **Song editor**: tap notes into a piano roll, or record a phrase by playing it. Export/import `.json` files or share a song as a link (the song is stored inside the URL, so nothing is uploaded).
+- Delay calibration and auto-tuning.
+
+## Privacy
+
+Audio is analysed on your device in real time. Nothing is recorded, stored or sent anywhere. Settings, best scores and your songs live in your browser's local storage. The site makes no third-party requests (no analytics, fonts or CDNs).
+
+## Publish on GitHub Pages
+
+1. Create a new public repository (for example `notefall`) and upload all files in this folder, keeping the structure.
+2. Edit `js/config.js` and `.github/FUNDING.yml` with your Buy Me a Coffee username and repository URL.
+3. In the repository: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, branch `main`, folder `/ (root)`.
+4. After a minute the game is live at `https://YOUR_USERNAME.github.io/notefall/`.
+
+The microphone only works on `https` or `localhost`, which GitHub Pages provides.
+
+### Run locally
+
+```bash
+python3 -m http.server 8000
+# then open http://localhost:8000
+```
+
+Opening `index.html` directly from disk will not work (browsers block the microphone and module loading on `file://`).
+
+## Song file format
+
+```json
+{
+  "format": "notefall-song-1",
+  "title": "My Song",
+  "composer": "Me",
+  "license": "original",
+  "bpm": 100,
+  "beatsPerBar": 4,
+  "notes": [[0, 1, "D5"], [1, 1, "F5"], [2, 2, "A5"]]
+}
+```
+
+Each note is `[start beat, length in beats, pitch]`. The playable range is C5–E6; notes outside it are folded into it by octave.
+
+## Controller hint mapping
+
+The 5-button profile assumes five base notes (L = D5, R = F5, A = A5, Y = B5, X = D6) and four bends: D-pad up/down = half step, stick up/down = whole step. If your setup differs, edit `PROFILES` in `js/theory.js`. Scoring is unaffected — it only listens to pitch.
+
+## Contributing songs
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Only public-domain melodies and original compositions are accepted into the built-in library.
+
+## Legal
+
+Notefall is an independent fan-made tool. It is not affiliated with, endorsed by or sponsored by Nintendo or any other game company. It contains no third-party game code, assets, music, characters or logos. All trademarks belong to their respective owners.
+
+Code: [MIT](LICENSE). Song transcriptions and original songs in `songs/`: [CC0 1.0](songs/LICENSE). See [NOTICE.md](NOTICE.md) for song sources.
+
+## Support
+
+If you enjoy Notefall, you can [buy me a coffee](https://buymeacoffee.com/YOUR_USERNAME). Donations are voluntary and don't unlock anything.

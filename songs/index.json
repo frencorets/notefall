@@ -1,0 +1,112 @@
+[
+ {
+  "id": "five-stones",
+  "title": "Five Stones (Tutorial 1)",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 72,
+  "difficulty": 1,
+  "file": "five-stones.json",
+  "noteCount": 22
+ },
+ {
+  "id": "lantern-walk",
+  "title": "Lantern Walk (Tutorial 2)",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 84,
+  "difficulty": 2,
+  "file": "lantern-walk.json",
+  "noteCount": 47
+ },
+ {
+  "id": "moonlit-pier",
+  "title": "Moonlit Pier",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 96,
+  "difficulty": 3,
+  "file": "moonlit-pier.json",
+  "noteCount": 34
+ },
+ {
+  "id": "ode-to-joy",
+  "title": "Ode to Joy",
+  "composer": "Ludwig van Beethoven",
+  "year": "1824",
+  "license": "public-domain",
+  "bpm": 100,
+  "difficulty": 2,
+  "file": "ode-to-joy.json",
+  "noteCount": 62
+ },
+ {
+  "id": "twinkle",
+  "title": "Twinkle, Twinkle, Little Star",
+  "composer": "Traditional (French melody)",
+  "year": "1761",
+  "license": "public-domain",
+  "bpm": 100,
+  "difficulty": 1,
+  "file": "twinkle.json",
+  "noteCount": 42
+ },
+ {
+  "id": "mary-lamb",
+  "title": "Mary Had a Little Lamb",
+  "composer": "Traditional (attrib. Lowell Mason)",
+  "year": "1830s",
+  "license": "public-domain",
+  "bpm": 110,
+  "difficulty": 1,
+  "file": "mary-lamb.json",
+  "noteCount": 26
+ },
+ {
+  "id": "frere-jacques",
+  "title": "Frère Jacques",
+  "composer": "Traditional (French)",
+  "year": "18th century",
+  "license": "public-domain",
+  "bpm": 104,
+  "difficulty": 2,
+  "file": "frere-jacques.json",
+  "noteCount": 32
+ },
+ {
+  "id": "greensleeves",
+  "title": "Greensleeves",
+  "composer": "Traditional (English)",
+  "year": "16th century",
+  "license": "public-domain",
+  "bpm": 96,
+  "difficulty": 4,
+  "file": "greensleeves.json",
+  "noteCount": 37
+ },
+ {
+  "id": "amazing-grace",
+  "title": "Amazing Grace",
+  "composer": "Traditional (tune \"New Britain\")",
+  "year": "1829",
+  "license": "public-domain",
+  "bpm": 80,
+  "difficulty": 2,
+  "file": "amazing-grace.json",
+  "noteCount": 32
+ },
+ {
+  "id": "jingle-bells",
+  "title": "Jingle Bells (chorus)",
+  "composer": "James Lord Pierpont",
+  "year": "1857",
+  "license": "public-domain",
+  "bpm": 120,
+  "difficulty": 2,
+  "file": "jingle-bells.json",
+  "noteCount": 51
+ }
+]
