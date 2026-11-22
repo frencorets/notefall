@@ -42,12 +42,16 @@ export const PROFILES = {
       { label: 'Y', midi: noteToMidi('B5'), color: '#9cdb5c' },
       { label: 'X', midi: noteToMidi('D6'), color: '#a98bff' },
     ],
+    // Order = preference: fewest inputs first, D-pad before stick (it lands the pitch exactly).
+    // Hold the modifier first, then press the note button.
     mods: [
       { id: '', semis: 0, glyph: '', hint: '' },
       { id: 'padUp', semis: 1, glyph: '♯', hint: 'D-pad ▲ (half step up)' },
+      { id: 'padDown', semis: -1, glyph: '♭', hint: 'D-pad ▼ (half step down)' },
       { id: 'stickUp', semis: 2, glyph: '↑', hint: 'Stick ▲ (whole step up)' },
       { id: 'stickDown', semis: -2, glyph: '↓', hint: 'Stick ▼ (whole step down)' },
-      { id: 'padDown', semis: -1, glyph: '♭', hint: 'D-pad ▼ (half step down)' },
+      { id: 'bothUp', semis: 3, glyph: '♯↑', hint: 'D-pad ▲ + Stick ▲ (+3 half steps)' },
+      { id: 'bothDown', semis: -3, glyph: '♭↓', hint: 'D-pad ▼ + Stick ▼ (−3 half steps)' },
     ],
     showButtons: true,
   },
@@ -63,7 +67,8 @@ export const PROFILES = {
 PROFILES.names.lanes = PROFILES.pad5.lanes;
 PROFILES.names.mods = PROFILES.pad5.mods;
 
-export const RANGE = { low: noteToMidi('C5'), high: noteToMidi('E6') };
+// L−3 = B4 up to X+3 = F6: 19 chromatic pitches.
+export const RANGE = { low: noteToMidi('B4'), high: noteToMidi('F6') };
 
 // Map a MIDI note to { lane, mod } for a profile (octave-folded into range).
 export function hintFor(midi, profile) {

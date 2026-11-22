@@ -1,6 +1,6 @@
 # Song sources
 
-Every built-in song is either a public-domain melody or an original composition. Transcriptions were made from the underlying tune (not copied from any modern arrangement, songbook or game), transposed to fit the C5–E6 range, and simplified to a single melodic line.
+Every built-in song is either a public-domain melody or an original composition. Transcriptions were made from the underlying tune (not copied from any modern arrangement, songbook or game), transposed to fit the playable range, and simplified to a single melodic line.
 
 | Song | Author | First published | Status |
 |---|---|---|---|

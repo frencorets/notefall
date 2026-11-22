@@ -430,6 +430,7 @@ export class Game {
       }
     }
     if (hit) return; // head consumed
+    if (yHead > this.hitY + 28) return; // past the line: keep the pitch readout clear
     const y = yHead - headH / 2;
     c.fillStyle = missed ? 'rgba(110,110,130,0.5)' : color;
     roundRect(c, x, y, w, headH, 9);
@@ -448,7 +449,7 @@ export class Game {
       c.fillText(L.main, x + w / 2 + (hasGlyph ? w * 0.12 : 0), y + headH / 2 - 3);
       c.font = `600 ${Math.min(10, w * 0.17)}px system-ui, sans-serif`;
       c.fillText(L.sub, x + w / 2 + (hasGlyph ? w * 0.12 : 0), y + headH - 7);
-      if (hasGlyph) badge(c, x + w * 0.24, y + headH / 2, Math.min(11, w * 0.16), L.glyph, '#14122a', color);
+      if (hasGlyph) badge(c, x + w * 0.24, y + headH / 2, Math.min(L.glyph.length > 1 ? 13 : 11, w * 0.18), L.glyph, '#14122a', color);
     } else {
       c.font = `800 ${Math.min(16, w * 0.28)}px system-ui, sans-serif`;
       c.fillText(L.main, x + w / 2, y + headH / 2 + 1);
@@ -473,7 +474,7 @@ function badge(c, x, y, r, text, bg, fg) {
   c.fillStyle = bg;
   c.fill();
   c.fillStyle = fg;
-  c.font = `800 ${Math.round(r * 1.3)}px system-ui, sans-serif`;
+  c.font = `800 ${Math.round(r * (text.length > 1 ? 0.95 : 1.3))}px system-ui, sans-serif`;
   c.textAlign = 'center';
   c.textBaseline = 'middle';
   c.fillText(text, x, y + 1);
