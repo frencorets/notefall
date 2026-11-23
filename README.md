@@ -4,7 +4,7 @@ A free, open-source play-along rhythm game that **listens**. Notes fall down fiv
 
 Any melodic instrument works: a real ocarina, a recorder, a tin whistle, whistling or humming, or a wind instrument inside a video game played through your TV speakers.
 
-**Play it:** `https://YOUR_USERNAME.github.io/notefall/`
+**Play it:** `https://frencorets.github.io/notefall/`
 
 ## Features
 
@@ -25,7 +25,7 @@ Audio is analysed on your device in real time. Nothing is recorded, stored or se
 1. Create a new public repository (for example `notefall`) and upload all files in this folder, keeping the structure.
 2. Edit `js/config.js` and `.github/FUNDING.yml` with your Buy Me a Coffee username and repository URL.
 3. In the repository: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, branch `main`, folder `/ (root)`.
-4. After a minute the game is live at `https://YOUR_USERNAME.github.io/notefall/`.
+4. After a minute the game is live at `https://frencorets.github.io/notefall/`.
 
 The microphone only works on `https` or `localhost`, which GitHub Pages provides.
 
