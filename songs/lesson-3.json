@@ -1,0 +1,90 @@
+{
+ "id": "lesson-3",
+ "title": "Stick bends",
+ "composer": "Notefall contributors (original)",
+ "year": "2026",
+ "license": "original",
+ "source": "Original exercise",
+ "bpm": 72,
+ "beatsPerBar": 4,
+ "difficulty": 1,
+ "lesson": 3,
+ "notes": [
+  [
+   0,
+   1,
+   "D5"
+  ],
+  [
+   1,
+   1,
+   "C5"
+  ],
+  [
+   2,
+   1,
+   "D5"
+  ],
+  [
+   4,
+   1,
+   "F5"
+  ],
+  [
+   5,
+   1,
+   "G5"
+  ],
+  [
+   6,
+   1,
+   "F5"
+  ],
+  [
+   8,
+   1,
+   "D6"
+  ],
+  [
+   9,
+   1,
+   "E6"
+  ],
+  [
+   10,
+   1,
+   "D6"
+  ],
+  [
+   12,
+   1,
+   "F5"
+  ],
+  [
+   13,
+   1,
+   "G5"
+  ],
+  [
+   14,
+   1,
+   "A5"
+  ],
+  [
+   16,
+   1,
+   "D5"
+  ],
+  [
+   17,
+   1,
+   "C5"
+  ],
+  [
+   19,
+   4,
+   "D5"
+  ]
+ ],
+ "provenance": "Lesson exercise."
+}

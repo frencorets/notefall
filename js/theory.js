@@ -45,13 +45,13 @@ export const PROFILES = {
     // Order = preference: fewest inputs first, D-pad before stick (it lands the pitch exactly).
     // Hold the modifier first, then press the note button.
     mods: [
-      { id: '', semis: 0, glyph: '', hint: '' },
-      { id: 'padUp', semis: 1, glyph: '♯', hint: 'D-pad ▲ (half step up)' },
-      { id: 'padDown', semis: -1, glyph: '♭', hint: 'D-pad ▼ (half step down)' },
-      { id: 'stickUp', semis: 2, glyph: '↑', hint: 'Stick ▲ (whole step up)' },
-      { id: 'stickDown', semis: -2, glyph: '↓', hint: 'Stick ▼ (whole step down)' },
-      { id: 'bothUp', semis: 3, glyph: '♯↑', hint: 'D-pad ▲ + Stick ▲ (+3 half steps)' },
-      { id: 'bothDown', semis: -3, glyph: '♭↓', hint: 'D-pad ▼ + Stick ▼ (−3 half steps)' },
+      { id: '', semis: 0, pad: 0, stick: 0, glyph: '', hint: '' },
+      { id: 'padUp', semis: 1, pad: 1, stick: 0, glyph: '♯', hint: 'D-pad ▲ (half step up)' },
+      { id: 'padDown', semis: -1, pad: -1, stick: 0, glyph: '♭', hint: 'D-pad ▼ (half step down)' },
+      { id: 'stickUp', semis: 2, pad: 0, stick: 1, glyph: '↑', hint: 'Stick ▲ (whole step up)' },
+      { id: 'stickDown', semis: -2, pad: 0, stick: -1, glyph: '↓', hint: 'Stick ▼ (whole step down)' },
+      { id: 'bothUp', semis: 3, pad: 1, stick: 1, glyph: '♯↑', hint: 'D-pad ▲ + Stick ▲ (+3 half steps)' },
+      { id: 'bothDown', semis: -3, pad: -1, stick: -1, glyph: '♭↓', hint: 'D-pad ▼ + Stick ▼ (−3 half steps)' },
     ],
     showButtons: true,
   },

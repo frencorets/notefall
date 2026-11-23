@@ -7,6 +7,7 @@ Every built-in song is either a public-domain melody or an original composition.
 | Five Stones (Tutorial 1) | Notefall contributors | 2026 | Original, CC0 |
 | Lantern Walk (Tutorial 2) | Notefall contributors | 2026 | Original, CC0 |
 | Moonlit Pier | Notefall contributors | 2026 | Original, CC0 |
+| Lessons 1–4 (exercises) | Notefall contributors | 2026 | Original, CC0 |
 | Ode to Joy | Ludwig van Beethoven | 1824 | Public domain |
 | Twinkle, Twinkle, Little Star | Traditional French melody | 1761 | Public domain |
 | Mary Had a Little Lamb | Traditional (attrib. Lowell Mason) | 1830s | Public domain |

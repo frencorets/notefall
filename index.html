@@ -18,26 +18,76 @@
       <div class="hero">
         <img src="icon.svg" alt="" class="logo" width="96" height="96" />
         <h1>Notefall</h1>
-        <p class="tagline">Play melodies on your instrument. Notefall listens and keeps score.</p>
+        <p class="tagline" data-i18n="tagline"></p>
       </div>
       <nav class="menu">
-        <button class="btn primary" data-go="library">▶ Play songs</button>
-        <button class="btn" data-go="editor" data-new-song>✎ Create a song</button>
-        <button class="btn" data-go="settings">🎙 Mic &amp; settings</button>
-        <button class="btn ghost" data-go="about">About</button>
+        <button class="btn primary big" id="startHereBtn" data-i18n="startHere"></button>
+        <button class="btn" id="learnBtn" data-go="lessons" data-i18n="learn"></button>
+        <button class="btn" id="playSongsBtn" data-go="library" data-i18n="playSongs"></button>
+        <button class="btn" data-go="editor" data-new-song data-i18n="create"></button>
+        <div class="menu-row">
+          <button class="btn ghost" data-go="settings" data-i18n="settings"></button>
+          <button class="btn ghost" data-go="about" data-i18n="about"></button>
+        </div>
       </nav>
-      <p class="first-time" id="firstTime">First time? Open <b>Mic &amp; settings</b> to check that Notefall can hear you.</p>
       <footer class="home-foot">
-        <a id="donateLink" class="coffee" href="#" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+        <a class="coffee donate" href="#" target="_blank" rel="noopener" data-i18n="coffee"></a>
       </footer>
+    </section>
+
+    <!-- SETUP WIZARD -->
+    <section id="setup" class="screen">
+      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2 data-i18n="setup"></h2><span></span></header>
+      <div class="card wizard">
+        <p class="step-count" id="stepCount"></p>
+        <div class="wstep" data-step="1">
+          <div class="wpic">📱 ➜ 📺</div>
+          <h3 data-i18n="s1Title"></h3>
+          <p data-i18n="s1Text"></p>
+          <p class="small muted" data-i18n="micPrivacy"></p>
+          <button class="btn primary big" id="wMicBtn" data-i18n="s1Btn"></button>
+        </div>
+        <div class="wstep" data-step="2">
+          <h3 data-i18n="s2Title"></h3>
+          <p data-i18n="s2Text"></p>
+          <div class="check-row" id="checkRow"></div>
+          <p class="small muted" data-i18n="s2Hint"></p>
+          <div class="actions">
+            <button class="btn ghost" id="w2Skip" data-i18n="skip"></button>
+            <button class="btn primary" id="w2Next" data-i18n="continue"></button>
+          </div>
+        </div>
+        <div class="wstep" data-step="3">
+          <h3 data-i18n="s3Title"></h3>
+          <p data-i18n="s3Text"></p>
+          <div class="actions">
+            <button class="btn ghost" id="w3Skip" data-i18n="skip"></button>
+            <button class="btn primary" id="w3Cal" data-i18n="s3Btn"></button>
+          </div>
+        </div>
+        <div class="wstep" data-step="4">
+          <div class="wpic">🎉</div>
+          <h3 data-i18n="doneTitle"></h3>
+          <p data-i18n="doneText"></p>
+          <button class="btn primary big" id="wDone" data-i18n="goLessons"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LESSONS -->
+    <section id="lessons" class="screen">
+      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2 data-i18n="lessons"></h2><span></span></header>
+      <p class="intro" data-i18n="lessonsIntro"></p>
+      <div class="list" id="lessonList"></div>
+      <p class="list-foot" data-i18n="lessonTip"></p>
     </section>
 
     <!-- LIBRARY -->
     <section id="library" class="screen">
-      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2>Songs</h2><span></span></header>
+      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2 data-i18n="songs"></h2><span></span></header>
       <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="builtin" role="tab">Library</button>
-        <button class="tab" data-tab="mine" role="tab">My songs</button>
+        <button class="tab active" data-tab="builtin" role="tab" data-i18n="library"></button>
+        <button class="tab" data-tab="mine" role="tab" data-i18n="mySongs"></button>
       </div>
       <div class="list" id="songList"></div>
       <div class="list-foot" id="listFoot"></div>
@@ -49,20 +99,27 @@
       <div class="card">
         <p class="meta" id="sheetMeta"></p>
         <p class="meta small" id="sheetBest"></p>
-        <label class="row">Speed <output id="speedOut">100%</output>
-          <input type="range" id="speedIn" min="0.5" max="1.25" step="0.05" value="1" />
-        </label>
-        <label class="row switch"><input type="checkbox" id="waitIn" /> <span>Wait mode — the song pauses until you play the right note</span></label>
-        <div class="actions">
-          <button class="btn primary" id="playBtn">▶ Play</button>
-          <button class="btn" id="listenBtn">♫ Listen</button>
+        <div class="lesson-pic" id="sheetPic" hidden></div>
+        <p id="sheetLessonText" hidden></p>
+        <div id="sheetOptions">
+          <p class="label" data-i18n="speed"></p>
+          <div class="seg" id="speedSeg">
+            <button data-speed="0.6" data-i18n="slow"></button>
+            <button data-speed="0.8" data-i18n="relaxed"></button>
+            <button data-speed="1" data-i18n="normal"></button>
+          </div>
+          <label class="row switch"><input type="checkbox" id="waitIn" /> <span data-i18n="practice"></span></label>
         </div>
-        <div class="actions secondary">
-          <button class="btn small" id="editBtn">✎ Edit</button>
-          <button class="btn small" id="shareBtn">🔗 Share link</button>
-          <button class="btn small" id="exportBtn">⤓ Export file</button>
-          <button class="btn small" id="saveSharedBtn" hidden>＋ Save to my songs</button>
-          <button class="btn small danger" id="deleteBtn">Delete</button>
+        <div class="actions">
+          <button class="btn primary big" id="playBtn" data-i18n="play"></button>
+          <button class="btn" id="listenBtn" data-i18n="listen"></button>
+        </div>
+        <div class="actions secondary" id="sheetMore">
+          <button class="btn small" id="editBtn"></button>
+          <button class="btn small" id="shareBtn" data-i18n="share"></button>
+          <button class="btn small" id="exportBtn" data-i18n="export"></button>
+          <button class="btn small" id="saveSharedBtn" hidden data-i18n="saveShared"></button>
+          <button class="btn small danger" id="deleteBtn" data-i18n="delete"></button>
         </div>
         <p class="meta small" id="sheetLicense"></p>
       </div>
@@ -74,10 +131,10 @@
       <button id="pauseBtn" class="icon-btn" aria-label="Pause">❚❚</button>
       <div id="pauseMenu" class="overlay" hidden>
         <div class="card">
-          <h2>Paused</h2>
-          <button class="btn primary" id="resumeBtn">Resume</button>
-          <button class="btn" id="restartBtn">Restart</button>
-          <button class="btn ghost" id="quitBtn">Quit</button>
+          <h2 data-i18n="paused"></h2>
+          <button class="btn primary" id="resumeBtn" data-i18n="resume"></button>
+          <button class="btn" id="restartBtn" data-i18n="restart"></button>
+          <button class="btn ghost" id="quitBtn" data-i18n="quit"></button>
         </div>
       </div>
     </section>
@@ -85,126 +142,140 @@
     <!-- RESULTS -->
     <section id="results" class="screen">
       <div class="card results">
-        <div class="grade" id="resGrade">A</div>
-        <h2 id="resTitle"></h2>
+        <div class="stars" id="resStars"></div>
+        <h2 id="resCheer"></h2>
+        <p class="muted" id="resTitle"></p>
         <p class="big" id="resScore"></p>
-        <p id="resNew" class="new-best" hidden>New best!</p>
+        <p id="resNew" class="new-best" hidden data-i18n="newBest"></p>
         <dl class="stats" id="resStats"></dl>
         <div class="actions">
-          <button class="btn primary" id="retryBtn">↻ Retry</button>
-          <button class="btn" data-go="library">Songs</button>
+          <button class="btn primary" id="retryBtn" data-i18n="retry"></button>
+          <button class="btn" id="resNextBtn" data-i18n="next"></button>
         </div>
       </div>
     </section>
 
     <!-- EDITOR -->
     <section id="editor" class="screen">
-      <header class="bar"><button class="back" id="editorBack" aria-label="Back">‹</button><h2>Song editor</h2><button class="btn small primary" id="saveSongBtn">Save</button></header>
+      <header class="bar"><button class="back" id="editorBack" aria-label="Back">‹</button><h2 data-i18n="editorTitle"></h2><button class="btn small primary" id="saveSongBtn" data-i18n="save"></button></header>
       <div class="ed-meta">
-        <input id="edTitle" placeholder="Song title" maxlength="80" />
-        <input id="edComposer" placeholder="Composer / author" maxlength="80" />
+        <input id="edTitle" data-i18n-ph="songTitle" maxlength="80" />
+        <input id="edComposer" data-i18n-ph="composer" maxlength="80" />
         <label>BPM <input id="edBpm" type="number" min="30" max="300" value="100" /></label>
-        <label>Beats/bar <select id="edBeats"><option>2</option><option>3</option><option selected>4</option><option>6</option></select></label>
-        <label>Rights <select id="edLicense">
-          <option value="original">My own melody</option>
-          <option value="public-domain">Public domain</option>
-          <option value="permission">I have permission</option>
+        <label><span data-i18n="beatsBar"></span> <select id="edBeats"><option>2</option><option>3</option><option selected>4</option><option>6</option></select></label>
+        <label><span data-i18n="rights"></span> <select id="edLicense">
+          <option value="original" data-i18n="rOriginal"></option>
+          <option value="public-domain" data-i18n="rPd"></option>
+          <option value="permission" data-i18n="rPerm"></option>
         </select></label>
       </div>
+      <p class="hint" data-i18n="edHint"></p>
+      <div class="ed-actions">
+        <button class="btn rec" id="recordBtn" data-i18n="record"></button>
+        <label class="switch small"><input type="checkbox" id="edMetro" checked /> <span data-i18n="metronome"></span></label>
+        <button class="btn" id="previewBtn" data-i18n="preview"></button>
+        <button class="btn" id="edPlayBtn" data-i18n="playIt"></button>
+      </div>
       <div class="ed-tools">
-        <label>New note <select id="edLen">
-          <option value="0.5">♪ ½ beat</option><option value="1" selected>♩ 1 beat</option><option value="1.5">♩. 1½</option><option value="2">𝅗𝅥 2 beats</option><option value="3">𝅗𝅥. 3</option><option value="4">𝅝 4 beats</option>
+        <label><span data-i18n="newNote"></span> <select id="edLen">
+          <option value="0.5">♪ ½</option><option value="1" selected>♩ 1</option><option value="1.5">♩. 1½</option><option value="2">𝅗𝅥 2</option><option value="3">𝅗𝅥. 3</option><option value="4">𝅝 4</option>
         </select></label>
-        <label>Grid <select id="edGrid"><option value="0.25">¼ beat</option><option value="0.5" selected>½ beat</option><option value="1">1 beat</option></select></label>
+        <label><span data-i18n="grid"></span> <select id="edGrid"><option value="0.25">¼</option><option value="0.5" selected>½</option><option value="1">1</option></select></label>
         <span class="sep"></span>
-        <button class="tool" data-act="left" title="Move left">◀</button>
-        <button class="tool" data-act="right" title="Move right">▶</button>
-        <button class="tool" data-act="up" title="Pitch up">▲</button>
-        <button class="tool" data-act="down" title="Pitch down">▼</button>
-        <button class="tool" data-act="shorter" title="Shorter">−</button>
-        <button class="tool" data-act="longer" title="Longer">＋</button>
-        <button class="tool danger" data-act="delete" title="Delete note">🗑</button>
+        <button class="tool" data-act="left" data-i18n-title="moveL">◀</button>
+        <button class="tool" data-act="right" data-i18n-title="moveR">▶</button>
+        <button class="tool" data-act="up" data-i18n-title="pitchUp">▲</button>
+        <button class="tool" data-act="down" data-i18n-title="pitchDown">▼</button>
+        <button class="tool" data-act="shorter" data-i18n-title="shorter">−</button>
+        <button class="tool" data-act="longer" data-i18n-title="longer">＋</button>
+        <button class="tool danger" data-act="delete" data-i18n-title="delNote">🗑</button>
       </div>
       <div class="roll">
         <div class="roll-labels"></div>
         <div class="roll-scroll"><canvas class="roll-grid"></canvas></div>
       </div>
-      <p class="hint">Tap the grid to add a note, tap a note to select it. Or record a phrase by playing it — it is added after the last bar.</p>
-      <div class="ed-actions">
-        <button class="btn" id="previewBtn">♫ Preview</button>
-        <button class="btn rec" id="recordBtn">● Record by playing</button>
-        <label class="switch small"><input type="checkbox" id="edMetro" checked /> <span>Metronome</span></label>
-        <button class="btn" id="edPlayBtn">▶ Play it</button>
-        <button class="btn ghost" id="importBtn">⤒ Import file</button>
-        <button class="btn ghost danger" data-act="clear">Clear all</button>
+      <div class="ed-actions end">
+        <button class="btn ghost" id="importBtn" data-i18n="import"></button>
+        <button class="btn ghost danger" data-act="clear" data-i18n="clearAll"></button>
       </div>
     </section>
 
     <!-- SETTINGS -->
     <section id="settings" class="screen">
-      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2>Mic &amp; settings</h2><span></span></header>
+      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2 data-i18n="settings"></h2><span></span></header>
       <div class="card">
-        <h3>1 · Microphone check</h3>
-        <p class="small">Point your phone or computer at the speaker (or at your instrument). Play a note: the name below should match.</p>
-        <button class="btn primary" id="micBtn">🎙 Turn on microphone</button>
+        <p class="label" data-i18n="language"></p>
+        <div class="seg" id="langSeg">
+          <button data-lang="auto" data-i18n="auto"></button>
+          <button data-lang="en">English</button>
+          <button data-lang="es">Español</button>
+        </div>
+        <p class="label" data-i18n="labels"></p>
+        <div class="seg col" id="profileSeg">
+          <button data-profile="pad5" data-i18n="labelsButtons"></button>
+          <button data-profile="names" data-i18n="labelsNames"></button>
+        </div>
+        <label class="row switch"><input type="checkbox" id="namesIn" /> <span data-i18n="showNames"></span></label>
+        <p class="label" data-i18n="noteSpeed"></p>
+        <div class="seg" id="nsSeg">
+          <button data-ns="170" data-i18n="slow"></button>
+          <button data-ns="230" data-i18n="normal"></button>
+          <button data-ns="320">⚡</button>
+        </div>
+        <button class="btn" id="setupAgainBtn" data-i18n="setupAgain"></button>
+      </div>
+      <div class="card">
+        <h3 data-i18n="legend"></h3>
+        <div id="legend" class="legend"></div>
+      </div>
+      <details class="card">
+        <summary data-i18n="advanced"></summary>
+        <h3 data-i18n="micTest"></h3>
+        <button class="btn primary" id="micBtn" data-i18n="micOn"></button>
         <div class="tuner" id="tuner">
           <div class="tuner-note" id="tunerNote">—</div>
           <div class="tuner-hint" id="tunerHint"></div>
           <div class="tuner-bar"><i id="tunerNeedle"></i></div>
           <div class="level"><i id="levelBar"></i></div>
         </div>
-        <p class="small muted">Audio is analysed on your device and never recorded or uploaded.</p>
-      </div>
-      <div class="card">
-        <h3>2 · Labels</h3>
-        <select id="profileIn"></select>
-        <p class="small muted" id="profileDesc"></p>
-        <div id="legend" class="legend"></div>
-      </div>
-      <div class="card">
-        <h3>3 · Timing &amp; tuning</h3>
-        <label class="row">Delay compensation <output id="latOut"></output>
+        <p class="small muted" data-i18n="micPrivacy"></p>
+        <label class="row"><span data-i18n="delay"></span> <output id="latOut"></output>
           <input type="range" id="latIn" min="0" max="500" step="5" />
         </label>
-        <button class="btn small" id="calLatBtn">Calibrate delay</button>
-        <label class="row">Tuning offset <output id="tuneOut"></output>
+        <p class="small muted" data-i18n="delayHelp"></p>
+        <button class="btn small" id="calLatBtn" data-i18n="calibrate"></button>
+        <label class="row"><span data-i18n="tuning"></span> <output id="tuneOut"></output>
           <input type="range" id="tuneIn" min="-50" max="50" step="1" />
         </label>
-        <button class="btn small" id="calTuneBtn">Auto-tune (hold one note)</button>
-        <label class="row">Mic sensitivity <output id="sensOut"></output>
+        <button class="btn small" id="calTuneBtn" data-i18n="autoTune"></button>
+        <label class="row"><span data-i18n="sensitivity"></span> <output id="sensOut"></output>
           <input type="range" id="sensIn" min="0.5" max="4" step="0.1" />
         </label>
-      </div>
-      <div class="card">
-        <h3>4 · Gameplay</h3>
-        <label class="row">Note speed <output id="nsOut"></output>
-          <input type="range" id="nsIn" min="150" max="480" step="10" />
-        </label>
-        <label class="row switch"><input type="checkbox" id="octIn" /> <span>Accept any octave (recommended — lets you hum or use a lower instrument)</span></label>
-        <label class="row switch"><input type="checkbox" id="lenIn" /> <span>Lenient repeats (count a held note for repeated notes)</span></label>
-      </div>
+        <label class="row switch"><input type="checkbox" id="octIn" /> <span data-i18n="anyOctave"></span></label>
+        <label class="row switch"><input type="checkbox" id="lenIn" /> <span data-i18n="lenient"></span></label>
+      </details>
     </section>
 
     <!-- ABOUT -->
     <section id="about" class="screen">
-      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2>About</h2><span></span></header>
+      <header class="bar"><button class="back" data-go="home" aria-label="Back">‹</button><h2 data-i18n="about"></h2><span></span></header>
       <div class="card prose">
-        <p><b>Notefall</b> is a free, open-source play-along game. It listens through your microphone, works out which note you are playing and scores your timing. Any melodic instrument works: a real ocarina, a recorder, a whistle, your voice, or a wind instrument inside another video game played through your speakers.</p>
-        <p>The built-in library only contains melodies that are in the public domain or were written for this project. Please only share songs you wrote, that are in the public domain, or that you have permission to share.</p>
-        <p>Notefall is an independent project. It is not affiliated with, endorsed by or sponsored by any video game company, and it uses no third-party game assets, music, characters or logos.</p>
-        <p>Your audio never leaves your device. Settings and your songs are stored only in this browser.</p>
-        <p><a id="repoLink" href="#" target="_blank" rel="noopener">Source code</a> · MIT licence</p>
-        <p><a id="donateLink2" class="coffee" href="#" target="_blank" rel="noopener">☕ Buy me a coffee</a></p>
+        <p data-i18n="aboutP1"></p>
+        <p data-i18n="aboutP2"></p>
+        <p data-i18n="aboutP3"></p>
+        <p data-i18n="aboutP4"></p>
+        <p><a id="repoLink" href="#" target="_blank" rel="noopener" data-i18n="source"></a> · MIT</p>
+        <p><a class="coffee donate" href="#" target="_blank" rel="noopener" data-i18n="coffee"></a></p>
       </div>
     </section>
 
     <!-- CALIBRATION OVERLAY -->
     <div id="calOverlay" class="overlay" hidden>
       <div class="card">
-        <h2 id="calTitle">Calibrating</h2>
+        <h2 id="calTitle"></h2>
         <p id="calText"></p>
         <div class="cal-dots" id="calDots"></div>
-        <button class="btn ghost" id="calCancel">Cancel</button>
+        <button class="btn ghost" id="calCancel" data-i18n="cancel"></button>
       </div>
     </div>
 

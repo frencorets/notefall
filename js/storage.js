@@ -12,9 +12,12 @@ const DEFAULT_SETTINGS = {
   latencyMs: 120,
   tuningCents: 0,
   sensitivity: 1,
-  noteSpeed: 260, // pixels per second
+  noteSpeed: 230, // pixels per second
   speed: 1,
   waitMode: false,
+  lang: 'auto',
+  showNoteNames: false,
+  setupDone: false,
 };
 
 function load() {

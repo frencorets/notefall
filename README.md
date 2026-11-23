@@ -8,13 +8,16 @@ Any melodic instrument works: a real ocarina, a recorder, a tin whistle, whistli
 
 ## Features
 
+- **Guided first-time setup**: allow the microphone, press each button once to check Notefall hears it, and a quick timing check.
+- **Four short lessons** that teach the five buttons, D-pad bends, stick bends and both together. Lessons wait for you on every note.
+- **Notes show the real input**: the button letter plus a drawn D-pad (lit arm) or stick (ringed arrow). Yellow means up, blue means down. A "Next" bar spells out the coming input in plain words.
 - Real-time pitch detection (YIN) in the browser. No install, no account, works on phones.
-- Scrolling note highway with Perfect / Great / Good timing, combos and a hold bonus for long notes.
-- Practice tools: speed control (50–125%) and **wait mode**, where the song pauses until you play the right note.
-- Two label styles: **5-button controller hints** (L R A Y X plus stick and D-pad bends) or plain **note names**.
-- A library of public-domain melodies and original tutorial songs.
-- **Song editor**: tap notes into a piano roll, or record a phrase by playing it. Export/import `.json` files or share a song as a link (the song is stored inside the URL, so nothing is uploaded).
-- Delay calibration and auto-tuning.
+- Perfect / Great / Good timing, streaks, stars, and a hold bonus for long notes.
+- Practice tools: Slow / Relaxed / Normal speed and practice mode, where the song waits for you.
+- **English and Spanish**, chosen automatically from the device language (changeable in Settings).
+- Labels for a 5-button controller, or plain note names for a real ocarina, recorder or voice.
+- A library of public-domain melodies and original songs.
+- **Song editor**: record a phrase by playing it, or tap notes into a piano roll. Export/import `.json` files or share a song as a link (the song is stored inside the URL, so nothing is uploaded).
 
 ## Privacy
 

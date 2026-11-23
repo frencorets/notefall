@@ -108,5 +108,53 @@
   "difficulty": 2,
   "file": "jingle-bells.json",
   "noteCount": 51
+ },
+ {
+  "id": "lesson-1",
+  "title": "The five buttons",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 72,
+  "difficulty": 1,
+  "file": "lesson-1.json",
+  "noteCount": 15,
+  "lesson": 1
+ },
+ {
+  "id": "lesson-2",
+  "title": "D-pad bends",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 72,
+  "difficulty": 1,
+  "file": "lesson-2.json",
+  "noteCount": 18,
+  "lesson": 2
+ },
+ {
+  "id": "lesson-3",
+  "title": "Stick bends",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 72,
+  "difficulty": 1,
+  "file": "lesson-3.json",
+  "noteCount": 15,
+  "lesson": 3
+ },
+ {
+  "id": "lesson-4",
+  "title": "Both together",
+  "composer": "Notefall contributors (original)",
+  "year": "2026",
+  "license": "original",
+  "bpm": 72,
+  "difficulty": 1,
+  "file": "lesson-4.json",
+  "noteCount": 13,
+  "lesson": 4
  }
 ]

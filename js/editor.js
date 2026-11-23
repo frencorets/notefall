@@ -2,6 +2,8 @@
 
 import * as audio from './audio.js';
 import { RANGE, midiToName, foldIntoRange, labelFor, PROFILES } from './theory.js';
+import { localNoteName } from './i18n.js';
+import { noteCanvas } from './icons.js';
 
 const ROW_H = 26;
 const COL_W = 30;
@@ -55,8 +57,15 @@ export class Editor {
       d.className = 'roll-label' + ([1, 3, 6, 8, 10].includes(m % 12) ? ' sharp' : '');
       d.style.height = ROW_H + 'px';
       const L = labelFor(m, PROFILES.pad5);
-      const hint = this.profile.showButtons ? `<small>${L.glyph || ''}${L.main}</small>` : '';
-      d.innerHTML = `<span>${midiToName(m)}</span>${hint}`;
+      d.innerHTML = `<span>${localNoteName(midiToName(m))}</span>`;
+      if (this.profile.showButtons) {
+        const cv = document.createElement('canvas');
+        cv.width = 40;
+        cv.height = ROW_H - 4;
+        const lane = PROFILES.pad5.lanes[L.h.lane];
+        noteCanvas(cv, { color: lane.color, letter: lane.label, mod: L.h.mod });
+        d.appendChild(cv);
+      }
       this.labels.appendChild(d);
     }
   }

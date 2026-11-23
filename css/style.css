@@ -128,7 +128,7 @@ select, input[type='number'], input:not([type]) {
 .tool { min-width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.07); color: var(--text); font-size: 16px; cursor: pointer; }
 .sep { flex: 0 0 4px; }
 .roll { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: rgba(0, 0, 0, 0.25); }
-.roll-labels { flex: none; width: 62px; border-right: 1px solid var(--line); }
+.roll-labels { flex: none; width: 84px; border-right: 1px solid var(--line); }
 .roll-label { display: flex; align-items: center; justify-content: space-between; padding: 0 6px; font-size: 12px; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
 .roll-label.sharp { background: rgba(0, 0, 0, 0.25); color: var(--muted); }
 .roll-label small { font-size: 10px; color: var(--accent); font-weight: 700; }
@@ -158,3 +158,47 @@ select, input[type='number'], input:not([type]) {
   opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 20; font-size: 14px; text-align: center;
 }
 #toast.show { opacity: 1; transform: translateX(-50%); }
+
+/* --- Friendlier UI additions --- */
+.btn.big { font-size: 18px; padding: 16px 20px; }
+.menu-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.intro { max-width: 640px; margin: 0 auto 14px; color: var(--muted); }
+.label { margin: 16px 0 8px; font-weight: 700; font-size: 15px; }
+.seg { display: flex; gap: 6px; background: rgba(0, 0, 0, 0.25); padding: 4px; border-radius: 14px; }
+.seg.col { flex-direction: column; }
+.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; padding: 8px 10px; }
+.seg button.on { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #1a1033; }
+#settings .card > .btn { margin-top: 18px; width: 100%; }
+details.card summary { cursor: pointer; font-weight: 700; font-size: 16px; padding: 4px 0; }
+details.card[open] summary { margin-bottom: 12px; }
+
+.wizard { text-align: center; }
+.wstep { display: none; }
+.wstep.on { display: block; animation: fade 0.2s ease-out; }
+.wstep h3 { font-size: 22px; margin: 6px 0 10px; }
+.wstep p { margin: 0 0 12px; }
+.wstep .btn.big { width: 100%; margin-top: 8px; }
+.wpic { font-size: 44px; margin: 8px 0; }
+.step-count { color: var(--muted); font-size: 13px; font-weight: 700; margin: 0 0 4px; }
+.check-row { display: flex; justify-content: center; gap: 10px; margin: 18px 0 12px; }
+.check-row span { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 20px; border: 3px solid var(--c); color: var(--c); background: rgba(0, 0, 0, 0.35); transition: background 0.2s, transform 0.2s; }
+.check-row span.ok { background: #7dffb0; border-color: #7dffb0; color: #10301f; transform: scale(1.08); }
+
+.lesson { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; width: 100%; text-align: left; padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; cursor: pointer; }
+.lesson .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; background: rgba(255, 255, 255, 0.1); }
+.lesson.done .num { background: #7dffb0; color: #10301f; }
+.lesson b { display: block; font-size: 16px; }
+.lesson small { color: var(--muted); font-size: 13px; }
+.lesson-pic { display: flex; gap: 10px; justify-content: center; margin: 8px 0 14px; flex-wrap: wrap; }
+#sheetLessonText { font-size: 16px; }
+
+.stars { font-size: 56px; letter-spacing: 6px; line-height: 1.1; }
+.stars .off { opacity: 0.2; }
+.legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px 14px; font-size: 14px; color: var(--muted); }
+.legend div { display: flex; align-items: center; gap: 10px; }
+.legend canvas { flex: none; }
+.ed-actions.end { margin-top: 12px; justify-content: flex-end; }
+.roll-label { gap: 4px; }
+.roll-label canvas { flex: none; }
+
+[hidden] { display: none !important; }
