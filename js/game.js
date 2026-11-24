@@ -35,6 +35,9 @@ export class Game {
     this.maxCombo = 0;
     this.counts = { perfect: 0, great: 0, good: 0, miss: 0 };
     this.sustainBonus = 0;
+    this.offsets = []; // timing of real note starts, used to auto-adjust the delay
+    // A note that repeats the previous pitch: through a TV the two presses can blend together.
+    this.notes.forEach((n, i) => (n.repeat = i > 0 && this.notes[i - 1].midi === n.midi));
     this.popups = [];
     this.particles = [];
     this.flash = new Array(5).fill(0);
@@ -114,7 +117,7 @@ export class Game {
     for (const e of events) {
       if (e.type !== 'on') continue;
       const t = this.songTimeAt(e.time) - lat;
-      this.tryHit(e.midi, t, false);
+      if (!this.tryHit(e.midi, t, false) && this.blockedSince == null) this.nearMiss(e.midi, t);
     }
   }
 
@@ -133,6 +136,7 @@ export class Game {
       }
     }
     if (best) {
+      if (!fromHold && this.blockedSince == null) this.offsets.push(best.dt);
       const a = Math.abs(best.dt);
       const rating = fromHold ? 'good' : a <= WINDOWS.perfect ? 'perfect' : a <= WINDOWS.great ? 'great' : 'good';
       this.judge(best.n, rating, best.dt);
@@ -145,6 +149,18 @@ export class Game {
       this.flash[lane] = -1;
     }
     return false;
+  }
+
+  // A note start that matched the right pitch but fell outside the timing window still tells us
+  // how far off the delay setting is.
+  nearMiss(midi, t) {
+    let best = null;
+    for (const n of this.notes) {
+      const dt = t - n.time;
+      if (Math.abs(dt) > 0.45 || n.state === 'perfect' || n.state === 'great' || n.state === 'good') continue;
+      if (pitchMatches(midi, n.midi, this.s.anyOctave) && (!best || Math.abs(dt) < Math.abs(best))) best = dt;
+    }
+    if (best != null) this.offsets.push(best);
   }
 
   judge(n, rating, dt = 0) {
@@ -215,6 +231,18 @@ export class Game {
       } else n.sustaining = false;
     }
 
+    // Repeated notes: if the same pitch is still sounding a moment after the note was due and no
+    // fresh start was heard (the presses blended together), count it.
+    if (!this.s.waitMode && this.current) {
+      for (const n of this.notes) {
+        if (n.time > judgeT) break;
+        const late = judgeT - n.time;
+        if (!n.state && n.repeat && late >= 0.1 && late <= WINDOWS.good && pitchMatches(this.current.midi, n.midi, this.s.anyOctave)) {
+          this.judge(n, 'great', 0);
+        }
+      }
+    }
+
     // Misses.
     if (!this.s.waitMode) {
       for (const n of this.notes) {
@@ -240,7 +268,10 @@ export class Game {
     const accuracy = Math.round(acc * 1000) / 10;
     const grade = accuracy >= 95 ? 'S' : accuracy >= 85 ? 'A' : accuracy >= 70 ? 'B' : accuracy >= 50 ? 'C' : 'D';
     this.stop();
-    this.onEnd && this.onEnd({ score: this.score, accuracy, grade, counts: this.counts, maxCombo: this.maxCombo, sustainBonus: this.sustainBonus, total });
+    const o = [...this.offsets].sort((a, b) => a - b);
+    // Practice mode pauses for the player, which skews timing, so only real-time runs count.
+    const timing = !this.s.waitMode && o.length >= 6 ? o[Math.floor(o.length / 2)] : null; // median, seconds (+ = late)
+    this.onEnd && this.onEnd({ score: this.score, accuracy, grade, counts: this.counts, maxCombo: this.maxCombo, sustainBonus: this.sustainBonus, total, timing, timingCount: o.length });
   }
 
   frame() {

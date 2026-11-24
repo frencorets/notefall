@@ -18,6 +18,7 @@ const DEFAULT_SETTINGS = {
   lang: 'auto',
   showNoteNames: false,
   setupDone: false,
+  autoDelay: true,
 };
 
 function load() {

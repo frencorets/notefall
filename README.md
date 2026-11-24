@@ -11,7 +11,7 @@ Any melodic instrument works: a real ocarina, a recorder, a tin whistle, whistli
 - **Guided first-time setup**: allow the microphone, press each button once to check Notefall hears it, and a quick timing check.
 - **Four short lessons** that teach the five buttons, D-pad bends, stick bends and both together. Lessons wait for you on every note.
 - **Notes show the real input**: the button letter plus a drawn D-pad (lit arm) or stick (ringed arrow). Yellow means up, blue means down. A "Next" bar spells out the coming input in plain words.
-- Real-time pitch detection (YIN) in the browser. No install, no account, works on phones.
+- Real-time pitch detection (YIN) on the audio thread, 100 times per second, so a busy phone does not slow listening down. It learns your TV’s delay automatically after each song. No install, no account, works on phones.
 - Perfect / Great / Good timing, streaks, stars, and a hold bonus for long notes.
 - Practice tools: Slow / Relaxed / Normal speed and practice mode, where the song waits for you.
 - **English and Spanish**, chosen automatically from the device language (changeable in Settings).

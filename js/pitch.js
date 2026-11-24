@@ -59,20 +59,22 @@ export function rms(buf) {
 }
 
 // Turns a stream of analysis frames into note events.
-//   tracker.push(timeSec, buffer, sampleRate) -> array of events
+//   tracker.push(timeSec, buffer, sampleRate)        -> events   (analyses the buffer itself)
+//   tracker.pushFrame(timeSec, {freq, clarity}|null, level) -> events (already analysed, e.g. by the worklet)
 // Events: { type: 'on', time, midi, cents } and { type: 'off', time }
 // tracker.current -> { midi, cents, level } of what is sounding right now (or null)
+// All windows are in seconds, so it behaves the same at 30, 60 or 100 frames per second.
 export class NoteTracker {
   constructor(opts = {}) {
     this.tuningCents = opts.tuningCents || 0;
     this.sensitivity = opts.sensitivity ?? 1; // higher = picks up quieter sounds
-    this.minClarity = opts.minClarity ?? 0.8;
+    this.minClarity = opts.minClarity ?? 0.72;
     this.minStable = opts.minStable ?? 0.03; // seconds a new pitch must hold before it counts
     this.noiseFloor = 0.002;
-    this.levels = []; // recent rms values for re-attack detection
+    this.levels = []; // [{ t, l }] recent levels for re-attack detection
     this.candidate = null; // { midi, count, time }
     this.active = null; // { midi, onTime }
-    this.silentFrames = 0;
+    this.lastHeard = -Infinity;
     this.current = null;
     this.lastRaw = null;
   }
@@ -82,42 +84,46 @@ export class NoteTracker {
   }
 
   push(time, buf, sampleRate) {
-    const events = [];
     const level = rms(buf);
+    const r = level >= this.gate() ? yin(buf, sampleRate) : null;
+    return this.pushFrame(time, r, level);
+  }
+
+  pushFrame(time, r, level) {
+    const events = [];
     // Slowly track the background noise floor (only when quiet).
     if (level < this.noiseFloor * 3 || this.noiseFloor === 0.002) {
       this.noiseFloor = this.noiseFloor * 0.97 + Math.min(level, 0.05) * 0.03;
     }
-    const prevLevels = this.levels.slice(-6);
-    this.levels.push(level);
-    if (this.levels.length > 12) this.levels.shift();
+    // Quietest level in the last 80 ms (before this frame).
+    let minPrev = level;
+    for (const x of this.levels) if (time - x.t <= 0.08 && x.l < minPrev) minPrev = x.l;
+    const prevLevel = this.levels.length ? this.levels[this.levels.length - 1].l : level;
+    this.levels.push({ t: time, l: level });
+    while (this.levels.length && time - this.levels[0].t > 0.2) this.levels.shift();
 
     let detected = null;
-    if (level >= this.gate()) {
-      const r = yin(buf, sampleRate);
-      if (r && r.clarity >= this.minClarity) {
-        const midiF = freqToMidi(r.freq) - this.tuningCents / 100;
-        detected = { midiF, midi: Math.round(midiF), cents: Math.round((midiF - Math.round(midiF)) * 100), level };
-      }
+    if (r && level >= this.gate() && r.clarity >= this.minClarity) {
+      const midiF = freqToMidi(r.freq) - this.tuningCents / 100;
+      detected = { midiF, midi: Math.round(midiF), cents: Math.round((midiF - Math.round(midiF)) * 100), level };
     }
     this.lastRaw = detected;
 
     if (!detected) {
-      this.silentFrames++;
       this.candidate = null;
-      if (this.active && this.silentFrames >= 3) {
+      if (this.active && time - this.lastHeard >= 0.04) {
         events.push({ type: 'off', time });
         this.active = null;
       }
-      if (this.silentFrames >= 2) this.current = null;
+      if (time - this.lastHeard >= 0.025) this.current = null;
       return events;
     }
-    this.silentFrames = 0;
+    this.lastHeard = time;
 
-    // Re-attack: same pitch but the level jumps after a dip (e.g. repeated button press).
-    const minPrev = prevLevels.length ? Math.min(...prevLevels) : level;
+    // Re-attack: same pitch, but the sound dipped and is rising again (a repeated button press).
+    // Through a TV the gap between two presses is small, so the dip only needs to be ~35%.
     const reattack = this.active && detected.midi === this.active.midi &&
-      minPrev < level * 0.55 && time - this.active.onTime > 0.09;
+      minPrev < level * 0.65 && level > prevLevel * 1.1 && time - this.active.onTime > 0.1;
 
     if (this.active && detected.midi === this.active.midi && !reattack) {
       this.candidate = null;
@@ -125,7 +131,7 @@ export class NoteTracker {
       return events;
     }
 
-    // New pitch (or re-attack): require a few consistent frames before firing.
+    // New pitch (or re-attack): require it to hold briefly before firing.
     if (this.candidate && this.candidate.midi === detected.midi) {
       this.candidate.count++;
     } else {

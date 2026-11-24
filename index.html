@@ -147,6 +147,7 @@
         <p class="muted" id="resTitle"></p>
         <p class="big" id="resScore"></p>
         <p id="resNew" class="new-best" hidden data-i18n="newBest"></p>
+        <p id="resAdjust" class="small muted" hidden></p>
         <dl class="stats" id="resStats"></dl>
         <div class="actions">
           <button class="btn primary" id="retryBtn" data-i18n="retry"></button>
@@ -225,6 +226,10 @@
         <button class="btn" id="setupAgainBtn" data-i18n="setupAgain"></button>
       </div>
       <div class="card">
+        <h3 data-i18n="tipsTitle"></h3>
+        <p class="small" data-i18n="tips"></p>
+      </div>
+      <div class="card">
         <h3 data-i18n="legend"></h3>
         <div id="legend" class="legend"></div>
       </div>
@@ -244,6 +249,7 @@
         </label>
         <p class="small muted" data-i18n="delayHelp"></p>
         <button class="btn small" id="calLatBtn" data-i18n="calibrate"></button>
+        <label class="row switch"><input type="checkbox" id="autoDelayIn" /> <span data-i18n="autoDelay"></span></label>
         <label class="row"><span data-i18n="tuning"></span> <output id="tuneOut"></output>
           <input type="range" id="tuneIn" min="-50" max="50" step="1" />
         </label>

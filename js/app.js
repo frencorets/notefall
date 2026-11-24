@@ -300,6 +300,17 @@ function showResults(r) {
     <dt>${t('miss')}</dt><dd>${r.counts.miss}</dd>
     <dt>${t('maxCombo')}</dt><dd>${r.maxCombo}</dd>`;
   $('#resStats').hidden = !!currentLesson;
+  // Auto-adjust the delay from how early/late the notes were heard.
+  let adj = '';
+  if (settings.autoDelay !== false && r.timing != null && Math.abs(r.timing) >= 0.02) {
+    const next = Math.max(0, Math.min(500, Math.round((settings.latencyMs + r.timing * 1000 * 0.8) / 5) * 5));
+    if (next !== settings.latencyMs) {
+      updateSettings({ latencyMs: next });
+      adj = t('delayAdjusted', { n: next });
+    }
+  }
+  $('#resAdjust').textContent = adj;
+  $('#resAdjust').hidden = !adj;
   $('#resNextBtn').textContent = currentLesson
     ? (currentLesson < 4 ? `${t('next')}: ${t(`l${currentLesson + 1}t`)}` : t('playSongs'))
     : currentSource === 'editor' ? t('editorTitle') : t('songs');
@@ -381,6 +392,7 @@ function renderSettings() {
   $('#sensOut').textContent = `×${(+settings.sensitivity).toFixed(1)}`;
   $('#octIn').checked = settings.anyOctave;
   $('#lenIn').checked = settings.lenientRepeats;
+  $('#autoDelayIn').checked = settings.autoDelay !== false;
   $('#micBtn').hidden = audio.micActive();
   // Legend: every kind of note with its meaning.
   const legend = $('#legend');
@@ -618,6 +630,7 @@ function wire() {
   $('#sensIn').oninput = (e) => { updateSettings({ sensitivity: +e.target.value }); $('#sensOut').textContent = `×${(+settings.sensitivity).toFixed(1)}`; };
   $('#octIn').onchange = (e) => updateSettings({ anyOctave: e.target.checked });
   $('#lenIn').onchange = (e) => updateSettings({ lenientRepeats: e.target.checked });
+  $('#autoDelayIn').onchange = (e) => updateSettings({ autoDelay: e.target.checked });
   $('#calLatBtn').onclick = () => calibrateLatency();
   $('#calTuneBtn').onclick = calibrateTuning;
 }

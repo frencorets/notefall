@@ -11,6 +11,8 @@ let buf = null;
 export let tracker = new NoteTracker();
 const listeners = new Set();
 let rafId = null;
+let workletNode = null;
+let mode = null;
 
 export function audioContext() {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -37,13 +39,38 @@ export async function startMic(settings) {
     },
   });
   const src = ctx.createMediaStreamSource(stream);
+  applySettings(settings);
+  // Preferred: analyse on the audio thread, 100 times per second.
+  try {
+    if (!ctx.audioWorklet) throw new Error('no AudioWorklet');
+    await ctx.audioWorklet.addModule(new URL('./pitch-worklet.js', import.meta.url));
+    workletNode = new AudioWorkletNode(ctx, 'notefall-pitch', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1] });
+    const mute = ctx.createGain();
+    mute.gain.value = 0; // keeps the node running without making any sound
+    src.connect(workletNode);
+    workletNode.connect(mute).connect(ctx.destination);
+    workletNode.port.onmessage = (e) => {
+      const m = e.data;
+      const events = tracker.pushFrame(m.t, m.f ? { freq: m.f, clarity: m.c } : null, m.l);
+      for (const fn of listeners) fn(events, tracker.current);
+    };
+    mode = 'worklet';
+    return;
+  } catch (e) {
+    console.warn('AudioWorklet unavailable, using fallback analysis', e);
+  }
+  // Fallback: analyse once per screen frame.
   analyser = ctx.createAnalyser();
   analyser.fftSize = 2048;
   analyser.smoothingTimeConstant = 0;
   src.connect(analyser);
   buf = new Float32Array(analyser.fftSize);
-  applySettings(settings);
+  mode = 'frame';
   loop();
+}
+
+export function analysisMode() {
+  return mode;
 }
 
 export function applySettings(s) {
@@ -58,6 +85,8 @@ export function stopMic() {
   if (stream) stream.getTracks().forEach((t) => t.stop());
   stream = null;
   analyser = null;
+  if (workletNode) workletNode.disconnect();
+  workletNode = null;
 }
 
 // Game time in seconds, on the audio clock (same clock the synth uses).
