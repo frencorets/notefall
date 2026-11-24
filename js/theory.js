@@ -36,11 +36,11 @@ export const PROFILES = {
     name: '5-button controller',
     description: 'Five base buttons plus stick and D-pad bends. Labels are hints only — edit js/theory.js to match your setup.',
     lanes: [
-      { label: 'L', midi: noteToMidi('D5'), color: '#3fd0c9' },
-      { label: 'R', midi: noteToMidi('F5'), color: '#ff7a8a' },
-      { label: 'A', midi: noteToMidi('A5'), color: '#ffc857' },
-      { label: 'Y', midi: noteToMidi('B5'), color: '#9cdb5c' },
-      { label: 'X', midi: noteToMidi('D6'), color: '#a98bff' },
+      { label: 'L', midi: noteToMidi('D5'), color: '#efeadb' },
+      { label: 'R', midi: noteToMidi('F5'), color: '#efeadb' },
+      { label: 'A', midi: noteToMidi('A5'), color: '#efeadb' },
+      { label: 'Y', midi: noteToMidi('B5'), color: '#efeadb' },
+      { label: 'X', midi: noteToMidi('D6'), color: '#efeadb' },
     ],
     // Order = preference: fewest inputs first, D-pad before stick (it lands the pitch exactly).
     // Hold the modifier first, then press the note button.

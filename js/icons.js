@@ -1,10 +1,10 @@
-// Canvas drawings for controller inputs: D-pad with a lit arm, stick with a ringed arrow.
-// Shared by the game, lesson cards and the settings legend.
+// Monochrome drawings: ivory note blocks with black labels, and simple input icons.
+//   D-pad bend  = a plus sign with an arrow      (+↑  / +↓)
+//   Stick bend  = a ring with an arrow           (O↑  / O↓)
+//   Both        = plus, ring and arrow together  (+O↑ / +O↓)
 
-export const UP = '#ffd36b';
-export const DOWN = '#6cc4ff';
-const DARK = '#17132f';
-const CROSS = 'rgba(255,255,255,0.42)';
+export const IVORY = '#efeadb';
+export const INK = '#151515';
 
 export function roundRect(c, x, y, w, h, r) {
   r = Math.max(0, Math.min(r, h / 2, w / 2));
@@ -17,87 +17,104 @@ export function roundRect(c, x, y, w, h, r) {
   c.closePath();
 }
 
-function dpad(c, x, y, r, dir) {
-  c.beginPath();
-  c.arc(x, y, r, 0, Math.PI * 2);
-  c.fillStyle = DARK;
-  c.fill();
-  const arm = r * 0.36; // half-thickness
-  const len = r * 0.72;
-  c.fillStyle = CROSS;
-  roundRect(c, x - arm, y - len, arm * 2, len * 2, arm * 0.5);
-  c.fill();
-  roundRect(c, x - len, y - arm, len * 2, arm * 2, arm * 0.5);
-  c.fill();
-  if (dir) {
-    c.fillStyle = dir > 0 ? UP : DOWN;
-    const top = dir > 0 ? y - len : y + arm * 0.6;
-    roundRect(c, x - arm, top, arm * 2, len - arm * 0.6, arm * 0.5);
-    c.fill();
-  }
+function plus(c, cx, cy, s, col) {
+  const t = s * 0.34;
+  c.fillStyle = col;
+  c.fillRect(cx - t / 2, cy - s / 2, t, s);
+  c.fillRect(cx - s / 2, cy - t / 2, s, t);
 }
 
-function stick(c, x, y, r, dir) {
-  const col = dir > 0 ? UP : DOWN;
-  c.beginPath();
-  c.arc(x, y, r, 0, Math.PI * 2);
-  c.fillStyle = DARK;
-  c.fill();
-  c.lineWidth = Math.max(1.5, r * 0.16);
+function ring(c, cx, cy, s, col) {
   c.strokeStyle = col;
+  c.lineWidth = Math.max(1.5, s * 0.17);
   c.beginPath();
-  c.arc(x, y, r * 0.86, 0, Math.PI * 2);
+  c.arc(cx, cy, s / 2 - c.lineWidth / 2, 0, Math.PI * 2);
   c.stroke();
-  // Arrow.
-  const s = dir > 0 ? -1 : 1;
+}
+
+function arrow(c, cx, cy, s, dir, col) {
+  // Vertical arrow, tip up (dir > 0) or down (dir < 0).
+  const up = dir > 0;
+  const head = s * 0.5;
+  const tipY = up ? cy - s / 2 : cy + s / 2;
+  const baseY = up ? tipY + head : tipY - head;
   c.fillStyle = col;
   c.beginPath();
-  c.moveTo(x, y + s * r * 0.62);
-  c.lineTo(x - r * 0.42, y + s * r * 0.05);
-  c.lineTo(x + r * 0.42, y + s * r * 0.05);
+  c.moveTo(cx, tipY);
+  c.lineTo(cx - s * 0.36, baseY);
+  c.lineTo(cx + s * 0.36, baseY);
   c.closePath();
   c.fill();
-  // Stem on the opposite side of the arrow head.
-  const stemTop = dir > 0 ? y - r * 0.1 : y - r * 0.5;
-  c.fillRect(x - r * 0.14, stemTop, r * 0.28, r * 0.6);
+  const stemW = s * 0.2;
+  const stemTop = up ? baseY - 1 : cy - s / 2;
+  const stemBot = up ? cy + s / 2 : baseY + 1;
+  c.fillRect(cx - stemW / 2, stemTop, stemW, stemBot - stemTop);
 }
 
-// Draw the modifier for a hint. Returns nothing if no modifier.
-export function drawMod(c, x, y, r, mod) {
+// Width the icon will take for a given size s (height).
+export function modWidth(mod, s) {
+  if (!mod || (!mod.pad && !mod.stick)) return 0;
+  const parts = (mod.pad ? 1 : 0) + (mod.stick ? 1 : 0);
+  return parts * s * 0.95 + s * 0.6;
+}
+
+// Draw the bend icon left-aligned at (x, cy) with height s.
+export function drawMod(c, x, cy, s, mod, col = INK) {
   if (!mod || (!mod.pad && !mod.stick)) return;
-  if (mod.pad && mod.stick) {
-    dpad(c, x, y, r, mod.pad);
-    stick(c, x + r * 0.85, y - r * 0.85, r * 0.62, mod.stick);
-  } else if (mod.pad) dpad(c, x, y, r, mod.pad);
-  else stick(c, x, y, r, mod.stick);
+  let cx = x + s / 2;
+  const dir = mod.pad || mod.stick;
+  if (mod.pad) {
+    plus(c, cx, cy, s * 0.82, col);
+    cx += s * 0.95;
+  }
+  if (mod.stick) {
+    ring(c, cx, cy, s * 0.82, col);
+    cx += s * 0.62;
+  } else {
+    cx -= s * 0.28;
+  }
+  arrow(c, cx + s * 0.05, cy, s * 0.82, dir, col);
 }
 
-// A note head block: rounded block with button letter and optional modifier icon.
-export function drawNoteHead(c, x, y, w, h, { color, letter, mod, sub, dim }) {
-  c.fillStyle = dim ? 'rgba(110,110,130,0.55)' : color;
-  roundRect(c, x, y, w, h, Math.min(12, h / 3));
+// A note block: ivory card, letter bottom-right, bend icon bottom-left.
+// The bottom of the block is the moment to play.
+export function drawNoteBlock(c, x, y, w, h, { letter, mod, sub, dim, glow }) {
+  c.fillStyle = dim ? 'rgba(239,234,219,0.28)' : IVORY;
+  roundRect(c, x, y, w, h, Math.min(10, h / 3));
   c.fill();
-  c.fillStyle = 'rgba(255,255,255,0.28)';
-  roundRect(c, x + 4, y + 3, w - 8, Math.min(8, h * 0.18), 4);
-  c.fill();
-  const hasMod = mod && (mod.pad || mod.stick);
-  const r = Math.min(h * 0.36, w * 0.24);
-  const letterX = hasMod ? x + w - Math.max(w * 0.26, 13) : x + w / 2;
-  if (hasMod) drawMod(c, x + r + Math.max(3, w * 0.06), y + h / 2 + (sub ? -3 : 0) + (mod.pad && mod.stick ? r * 0.15 : 0), r * (mod.pad && mod.stick ? 0.85 : 1), mod);
-  c.fillStyle = dim ? '#ddd' : DARK;
-  c.textAlign = 'center';
-  c.textBaseline = 'middle';
-  const fs = Math.round(Math.min(h * 0.5, w * 0.34));
-  c.font = `800 ${fs}px system-ui, -apple-system, sans-serif`;
-  c.fillText(letter, letterX, y + h / 2 + (sub ? -5 : 1));
-  if (sub) {
-    c.font = `700 ${Math.round(Math.min(11, h * 0.24))}px system-ui, -apple-system, sans-serif`;
-    c.fillText(sub, hasMod ? x + w / 2 : letterX, y + h - 9);
+  if (glow) {
+    c.strokeStyle = '#ffffff';
+    c.lineWidth = 3;
+    roundRect(c, x, y, w, h, Math.min(10, h / 3));
+    c.stroke();
+  }
+  const ink = dim ? 'rgba(20,20,20,0.55)' : INK;
+  const fs = Math.round(Math.min(26, w * 0.3, h * 0.6));
+  const base = y + h - Math.max(8, fs * 0.35);
+  c.fillStyle = ink;
+  c.font = `900 ${fs}px "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif`;
+  c.textAlign = 'right';
+  c.textBaseline = 'alphabetic';
+  c.fillText(letter, x + w - Math.max(7, w * 0.08), base);
+  if (mod && (mod.pad || mod.stick)) {
+    const s = Math.round(fs * 0.78);
+    drawMod(c, x + Math.max(6, w * 0.07), base - fs * 0.36, s, mod, ink);
+  }
+  if (sub && h >= 44) {
+    c.font = `700 ${Math.max(10, Math.round(fs * 0.45))}px system-ui, -apple-system, sans-serif`;
+    c.textAlign = 'right';
+    c.fillStyle = dim ? 'rgba(20,20,20,0.45)' : 'rgba(20,20,20,0.6)';
+    c.fillText(sub, x + w - Math.max(7, w * 0.08), base - fs - 2);
   }
 }
 
-// Render a standalone example note to a small <canvas> (lesson cards, legend).
-export function noteCanvas(cv, { color, letter, mod, sub }) {
+// Kept for older callers: a short block of fixed height.
+export function drawNoteHead(c, x, y, w, h, opts) {
+  drawNoteBlock(c, x, y, w, h, opts);
+}
+
+// Render a standalone example note to a small <canvas> (lesson cards, legend, editor).
+export function noteCanvas(cv, { letter, mod, sub }) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = cv.width, h = cv.height;
   cv.style.width = w + 'px';
@@ -106,5 +123,39 @@ export function noteCanvas(cv, { color, letter, mod, sub }) {
   cv.height = h * dpr;
   const c = cv.getContext('2d');
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  drawNoteHead(c, 2, 2, w - 4, h - 4, { color, letter, mod, sub });
+  drawNoteBlock(c, 1, 1, w - 2, h - 2, { letter, mod, sub });
+}
+
+// The five targets: L and R are rounded bars (shoulder buttons), A Y X are ringed circles.
+export function drawTarget(c, cx, cy, size, label, shape, active) {
+  if (shape === 'bar') {
+    const w = size * 1.75, h = size * 1.15;
+    // Outer light frame.
+    c.fillStyle = active ? IVORY : 'rgba(239,234,219,0.9)';
+    roundRect(c, cx - w / 2 - 3, cy - h / 2 - 3, w + 6, h + 6, 14);
+    c.fill();
+    c.fillStyle = active ? IVORY : INK;
+    roundRect(c, cx - w / 2 + 2, cy - h / 2 + 2, w - 4, h - 4, 10);
+    c.fill();
+  } else {
+    const r = size * 0.78;
+    c.beginPath();
+    c.arc(cx, cy, r + 3, 0, Math.PI * 2);
+    c.fillStyle = 'rgba(239,234,219,0.9)';
+    c.fill();
+    c.beginPath();
+    c.arc(cx, cy, r, 0, Math.PI * 2);
+    c.fillStyle = active ? IVORY : INK;
+    c.fill();
+    c.beginPath();
+    c.arc(cx, cy, r * 0.8, 0, Math.PI * 2);
+    c.lineWidth = Math.max(2, r * 0.09);
+    c.strokeStyle = active ? INK : IVORY;
+    c.stroke();
+  }
+  c.fillStyle = active ? INK : IVORY;
+  c.font = `900 ${Math.round(size * 0.78)}px "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif`;
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.fillText(label, cx, cy + 1);
 }

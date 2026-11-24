@@ -3,7 +3,7 @@
 import * as audio from './audio.js';
 import { labelFor, hintFor, pitchMatches, midiToName, PROFILES } from './theory.js';
 import { t, instruction, localNoteName } from './i18n.js';
-import { drawNoteHead, drawMod, roundRect } from './icons.js';
+import { drawNoteBlock, drawMod, modWidth, drawTarget, roundRect } from './icons.js';
 
 const WINDOWS = { perfect: 0.075, great: 0.135, good: 0.2 };
 const POINTS = { perfect: 100, great: 70, good: 40 };
@@ -55,11 +55,12 @@ export class Game {
     this.canvas.width = Math.round(r.width * dpr);
     this.canvas.height = Math.round(r.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.hwW = Math.min(this.W - 16, 520);
+    this.hwW = Math.min(this.W - 6, 560);
     this.hwX = (this.W - this.hwW) / 2;
     this.laneW = this.hwW / 5;
-    this.r = Math.min(this.laneW * 0.38, 30);
-    this.hitY = this.H - Math.max(150, this.H * 0.2);
+    this.tsize = Math.min(this.laneW * 0.46, 38); // target size
+    this.targetGap = this.tsize * 0.95; // hit line to target centre
+    this.hitY = this.H - Math.max(190, this.H * 0.25);
   }
 
   start() {
@@ -152,7 +153,7 @@ export class Game {
     const lane = n.label.h.lane;
     if (rating === 'miss') {
       this.combo = 0;
-      this.popups.push({ text: t('popMiss'), lane, t: performance.now(), color: '#ff9b9b' });
+      this.popups.push({ text: t('popMiss'), lane, t: performance.now(), color: 'rgba(239,234,219,0.6)' });
       return;
     }
     this.combo++;
@@ -161,7 +162,7 @@ export class Game {
     this.score += POINTS[rating] * mult;
     const label = t(rating === 'perfect' ? 'popPerfect' : rating === 'great' ? 'popGreat' : 'popGood');
     const timing = rating === 'perfect' || this.s.waitMode ? '' : ' · ' + t(dt < 0 ? 'early' : 'late');
-    this.popups.push({ text: label + timing, lane, t: performance.now(), color: rating === 'perfect' ? '#fff3b0' : rating === 'great' ? '#9cf0ff' : '#c8c8ff' });
+    this.popups.push({ text: label + timing, lane, t: performance.now(), color: rating === 'perfect' ? '#ffffff' : '#efeadb' });
     this.flash[lane] = 1;
     const color = this.profile.lanes[lane].color;
     for (let k = 0; k < 14; k++) {
@@ -252,69 +253,51 @@ export class Game {
   // ------------------------------------------------------------------ drawing
   draw() {
     const c = this.ctx;
-    const { W, H, hwX, hwW, laneW, hitY, r } = this;
+    const { W, H, hwX, hwW, laneW, hitY } = this;
     const pps = this.s.noteSpeed || 260;
     const st = this.songNow ?? 0;
     c.clearRect(0, 0, W, H);
 
-    // Lanes.
+    // Lanes: transparent, thin light dividers.
     for (let i = 0; i < 5; i++) {
-      const x = hwX + i * laneW;
-      const g = c.createLinearGradient(0, 0, 0, hitY);
-      g.addColorStop(0, 'rgba(255,255,255,0)');
-      g.addColorStop(1, hexA(this.profile.lanes[i].color, 0.12));
-      c.fillStyle = g;
-      c.fillRect(x + 1, 0, laneW - 2, hitY);
       if (this.flash[i] !== 0) {
-        c.fillStyle = this.flash[i] > 0 ? hexA(this.profile.lanes[i].color, 0.28 * this.flash[i]) : `rgba(255,80,80,${0.14 * -this.flash[i]})`;
-        c.fillRect(x + 1, 0, laneW - 2, hitY);
+        c.fillStyle = this.flash[i] > 0 ? `rgba(239,234,219,${0.16 * this.flash[i]})` : `rgba(255,90,90,${0.12 * -this.flash[i]})`;
+        c.fillRect(hwX + i * laneW + 1, 0, laneW - 2, hitY);
         this.flash[i] *= 0.88;
         if (Math.abs(this.flash[i]) < 0.02) this.flash[i] = 0;
       }
     }
-    c.fillStyle = 'rgba(255,255,255,0.08)';
-    for (let i = 0; i <= 5; i++) c.fillRect(hwX + i * laneW, 0, 1, hitY);
+    c.fillStyle = 'rgba(239,234,219,0.28)';
+    for (let i = 1; i < 5; i++) c.fillRect(Math.round(hwX + i * laneW), 0, 1, hitY);
 
-    // Beat lines.
-    const beatsVisible = hitY / pps / this.spb + 2;
-    const curBeat = (st - this.leadIn) / this.spb;
-    for (let b = Math.floor(curBeat) - 1; b < curBeat + beatsVisible; b++) {
-      const y = hitY - (this.leadIn + b * this.spb - st) * pps;
-      if (y < 0 || y > hitY) continue;
-      const bar = ((b % this.song.beatsPerBar) + this.song.beatsPerBar) % this.song.beatsPerBar === 0;
-      c.fillStyle = bar ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.045)';
-      c.fillRect(hwX, y, hwW, bar ? 2 : 1);
-    }
+    // Hit line.
+    c.fillStyle = 'rgba(239,234,219,0.55)';
+    c.fillRect(hwX, hitY, hwW, 2);
 
-    // Hit line and target circles.
-    c.fillStyle = 'rgba(255,255,255,0.22)';
-    c.fillRect(hwX, hitY - 1, hwW, 2);
-    const cur = this.current;
-    const curHint = cur ? hintFor(cur.midi, this.profile) : null;
-    for (let i = 0; i < 5; i++) {
-      const x = this.laneX(i);
-      const lane = this.profile.lanes[i];
-      const active = curHint && curHint.lane === i;
-      c.beginPath();
-      c.arc(x, hitY, r, 0, Math.PI * 2);
-      c.fillStyle = active ? lane.color : 'rgba(10,12,30,0.9)';
-      c.fill();
-      c.lineWidth = 3;
-      c.strokeStyle = lane.color;
-      c.stroke();
-      c.fillStyle = active ? '#17132f' : lane.color;
-      c.font = `800 ${Math.round(r * 0.85)}px system-ui, -apple-system, sans-serif`;
+    // Song title, shown large at the start like a title card.
+    const first = this.notes[0];
+    if (first && st < first.time + 1.5) {
+      const a = Math.max(0, Math.min(1, (first.time + 1.5 - st) / 1.5));
+      c.globalAlpha = a;
       c.textAlign = 'center';
-      c.textBaseline = 'middle';
-      const name = this.profile.showButtons ? lane.label : localNoteName(midiToName(lane.midi).replace(/\d/, ''));
-      c.fillText(name, x, hitY + 1);
-      if (active && this.profile.showButtons) drawMod(c, x - r * 0.85, hitY - r * 0.85, r * 0.42, curHint.mod);
+      c.textBaseline = 'alphabetic';
+      c.fillStyle = '#efeadb';
+      let fs = Math.min(44, W * 0.11);
+      c.font = `700 ${fs}px Georgia, "Times New Roman", serif`;
+      while (c.measureText(this.song.title).width > W - 32 && fs > 18) c.font = `700 ${--fs}px Georgia, "Times New Roman", serif`;
+      c.fillText(this.song.title, W / 2, 110);
+      if (this.song.composer) {
+        c.font = `600 ${Math.round(fs * 0.42)}px Georgia, "Times New Roman", serif`;
+        c.fillStyle = 'rgba(239,234,219,0.75)';
+        c.fillText(this.song.composer, W / 2, 110 + fs * 0.7);
+      }
+      c.globalAlpha = 1;
     }
 
-    // Notes (far ones first). Clip to the highway so nothing covers the bottom panel.
+    // Notes: blocks as tall as the note lasts, clipped at the hit line.
     c.save();
     c.beginPath();
-    c.rect(0, 0, W, hitY + this.headH() / 2 + 2);
+    c.rect(0, 0, W, hitY);
     c.clip();
     const visibleUntil = st + hitY / pps + 0.5;
     for (let k = this.notes.length - 1; k >= 0; k--) {
@@ -325,7 +308,24 @@ export class Game {
     }
     c.restore();
 
-    // Popups (friendly feedback above the targets).
+    // Targets.
+    const cur = this.current;
+    const curHint = cur ? hintFor(cur.midi, this.profile) : null;
+    const ty = hitY + this.targetGap;
+    for (let i = 0; i < 5; i++) {
+      const x = this.laneX(i);
+      const lane = this.profile.lanes[i];
+      const active = curHint && curHint.lane === i;
+      const label = this.profile.showButtons ? lane.label : localNoteName(midiToName(lane.midi).replace(/\d/, ''));
+      drawTarget(c, x, ty, this.tsize, label, this.profile.showButtons && i < 2 ? 'bar' : 'circle', active);
+      // The bend being heard, shown under the target (like the controller hint).
+      if (active && this.profile.showButtons && (curHint.mod.pad || curHint.mod.stick)) {
+        const s = Math.round(this.tsize * 0.55);
+        drawMod(c, x - modWidth(curHint.mod, s) / 2, ty + this.tsize + s * 0.2, s, curHint.mod, '#efeadb');
+      }
+    }
+
+    // Popups.
     const nowMs = performance.now();
     this.popups = this.popups.filter((p) => nowMs - p.t < 750);
     c.textAlign = 'center';
@@ -335,7 +335,7 @@ export class Game {
       c.globalAlpha = 1 - age;
       c.fillStyle = p.color;
       c.font = '800 16px system-ui, -apple-system, sans-serif';
-      c.fillText(p.text, this.laneX(p.lane), hitY - r - 26 - age * 30);
+      c.fillText(p.text, this.laneX(p.lane), hitY - 14 - age * 30);
       c.globalAlpha = 1;
     }
 
@@ -347,8 +347,8 @@ export class Game {
       p.vy += 6;
       p.life -= 0.03;
       c.globalAlpha = Math.max(0, p.life);
-      c.fillStyle = p.color;
-      c.fillRect(p.x - 2.5, p.y - 2.5, 5, 5);
+      c.fillStyle = '#efeadb';
+      c.fillRect(p.x - 2, p.y - 2, 4, 4);
     }
     c.globalAlpha = 1;
 
@@ -357,46 +357,37 @@ export class Game {
     // HUD.
     c.textAlign = 'left';
     c.textBaseline = 'alphabetic';
-    c.fillStyle = '#fff';
-    c.font = '800 24px system-ui, -apple-system, sans-serif';
-    c.fillText(this.score.toLocaleString(), 14, 36);
-    c.font = '13px system-ui, -apple-system, sans-serif';
-    c.fillStyle = 'rgba(255,255,255,0.6)';
-    c.fillText(this.song.title, 14, 56);
-    // Mic status dot.
+    c.fillStyle = '#efeadb';
+    c.font = '800 22px system-ui, -apple-system, sans-serif';
+    c.fillText(this.score.toLocaleString(), 14, 34);
     c.beginPath();
-    c.arc(18, 72, 5, 0, Math.PI * 2);
-    c.fillStyle = cur ? '#7dffb0' : 'rgba(255,255,255,0.25)';
+    c.arc(19, 50, 4.5, 0, Math.PI * 2);
+    c.fillStyle = cur ? '#efeadb' : 'rgba(239,234,219,0.25)';
     c.fill();
-    c.fillStyle = 'rgba(255,255,255,0.55)';
+    c.fillStyle = 'rgba(239,234,219,0.6)';
     c.font = '12px system-ui, -apple-system, sans-serif';
-    c.fillText(cur ? `${t('heard')}: ${localNoteName(midiToName(cur.midi).replace(/-?\d+$/, ''))}` : t('listening'), 30, 76);
+    c.fillText(cur ? `${t('heard')}: ${localNoteName(midiToName(cur.midi).replace(/-?\d+$/, ''))}` : t('listening'), 30, 54);
 
     if (this.combo >= 4) {
-      c.textAlign = 'center';
-      c.font = '800 30px system-ui, -apple-system, sans-serif';
-      c.fillStyle = 'rgba(255,255,255,0.85)';
-      c.fillText(`${this.combo}`, W / 2, hitY * 0.3);
-      c.font = '700 12px system-ui, -apple-system, sans-serif';
-      c.fillStyle = 'rgba(255,255,255,0.55)';
-      c.fillText(`${t('combo')} ×${1 + Math.min(3, Math.floor(this.combo / 8))}`, W / 2, hitY * 0.3 + 18);
+      c.textAlign = 'right';
+      c.font = '800 20px system-ui, -apple-system, sans-serif';
+      c.fillStyle = '#efeadb';
+      c.fillText(`×${1 + Math.min(3, Math.floor(this.combo / 8))}  ${this.combo}`, W - 66, 34);
+      c.font = '600 11px system-ui, -apple-system, sans-serif';
+      c.fillStyle = 'rgba(239,234,219,0.55)';
+      c.fillText(t('combo'), W - 66, 50);
     }
 
     // Count-in.
-    const first = this.notes[0];
     if (first && this.blockedSince == null && st < first.time - 0.05 && first.time - st < 4 * this.spb + 0.3) {
       const beatsLeft = Math.ceil((first.time - st) / this.spb);
       if (beatsLeft <= this.song.beatsPerBar) {
         c.textAlign = 'center';
-        c.fillStyle = 'rgba(255,255,255,0.92)';
-        c.font = '800 64px system-ui, -apple-system, sans-serif';
-        c.fillText(String(beatsLeft), W / 2, hitY * 0.5);
+        c.fillStyle = '#efeadb';
+        c.font = '700 64px Georgia, "Times New Roman", serif';
+        c.fillText(String(beatsLeft), W / 2, hitY * 0.55);
       }
     }
-  }
-
-  headH() {
-    return this.s.showNoteNames ? 54 : 46;
   }
 
   // Bottom panel: the next input in pictures and plain words.
@@ -404,53 +395,53 @@ export class Game {
     const c = this.ctx;
     const lat = (this.s.latencyMs || 0) / 1000;
     const upcoming = this.notes.filter((n) => !n.state && n.time >= st - lat - 0.25).slice(0, 2);
-    // If a held note is being sustained, say so.
     const holding = this.notes.find((n) => n.sustaining);
-    const x = this.hwX;
-    const w = this.hwW;
-    const y = this.hitY + this.r + 14;
-    const h = Math.min(64, this.H - y - 12);
+    const x = this.hwX + 4;
+    const w = this.hwW - 8;
+    const y = this.hitY + this.targetGap + this.tsize + this.tsize * 0.9;
+    const h = Math.min(60, this.H - y - 10);
     if (h < 40) return;
-    c.fillStyle = 'rgba(36,29,85,0.92)';
-    roundRect(c, x, y, w, h, 14);
+    c.fillStyle = 'rgba(0,0,0,0.45)';
+    roundRect(c, x, y, w, h, 12);
     c.fill();
+    c.strokeStyle = 'rgba(239,234,219,0.25)';
+    c.lineWidth = 1;
+    roundRect(c, x, y, w, h, 12);
+    c.stroke();
     if (!upcoming.length && !holding) return;
     const main = holding && (!upcoming.length || upcoming[0].time - st > 0.4) ? holding : upcoming[0];
     const L = main.label;
-    const laneCol = this.profile.lanes[L.h.lane].color;
-    const bw = Math.min(64, w * 0.2);
-    const bh = h - 16;
-    const letter = this.profile.showButtons ? L.main : localNoteName(L.main);
-    drawNoteHead(c, x + 8, y + 8, bw, bh, { color: laneCol, letter, mod: this.profile.showButtons ? L.h.mod : null });
+    const bw = Math.min(70, w * 0.22);
+    const bh = h - 14;
+    const buttons = this.profile.showButtons;
+    drawNoteBlock(c, x + 7, y + 7, bw, bh, { letter: buttons ? L.main : localNoteName(L.main.replace(/-?\d+$/, '')), mod: buttons ? L.h.mod : null });
     c.textAlign = 'left';
     c.textBaseline = 'alphabetic';
-    const tx = x + 8 + bw + 12;
+    const tx = x + 7 + bw + 12;
     const waiting = this.blockedSince != null;
-    c.fillStyle = waiting ? '#ffd36b' : 'rgba(255,255,255,0.55)';
+    c.fillStyle = waiting ? '#ffffff' : 'rgba(239,234,219,0.55)';
     c.font = '800 11px system-ui, -apple-system, sans-serif';
-    c.fillText(waiting ? t('waiting') : t('nextLabel'), tx, y + 20);
-    c.fillStyle = '#fff';
-    const words = main === holding ? t('holdLong') : this.profile.showButtons
+    c.fillText(waiting ? t('waiting') : t('nextLabel'), tx, y + 19);
+    c.fillStyle = '#efeadb';
+    const words = main === holding ? t('holdLong') : buttons
       ? instruction(L.h, this.profile.lanes[L.h.lane].label)
       : localNoteName(midiToName(L.h.midi));
+    const nextW = upcoming[1] && main !== holding ? 66 : 0;
     let fs = 17;
     c.font = `700 ${fs}px system-ui, -apple-system, sans-serif`;
-    const nextW = upcoming[1] && main !== holding ? 70 : 0;
     const maxW = w - (tx - x) - 10 - nextW;
     while (c.measureText(words).width > maxW && fs > 11) c.font = `700 ${--fs}px system-ui, -apple-system, sans-serif`;
-    c.fillText(words, tx, y + 20 + fs + 6);
-    // The one after, small.
+    c.fillText(words, tx, y + 19 + fs + 6);
     if (nextW) {
       const n2 = upcoming[1].label;
-      const sx = x + w - 62;
-      c.fillStyle = 'rgba(255,255,255,0.45)';
+      const sx = x + w - 60;
+      c.fillStyle = 'rgba(239,234,219,0.5)';
       c.font = '700 10px system-ui, -apple-system, sans-serif';
       c.textAlign = 'center';
-      c.fillText(t('then'), sx + 26, y + 15);
-      drawNoteHead(c, sx, y + 20, 52, h - 28, {
-        color: this.profile.lanes[n2.h.lane].color,
-        letter: this.profile.showButtons ? n2.main : localNoteName(n2.main),
-        mod: this.profile.showButtons ? n2.h.mod : null,
+      c.fillText(t('then'), sx + 26, y + 14);
+      drawNoteBlock(c, sx, y + 18, 52, h - 25, {
+        letter: buttons ? n2.main : localNoteName(n2.main.replace(/-?\d+$/, '')),
+        mod: buttons ? n2.h.mod : null,
       });
     }
   }
@@ -458,40 +449,33 @@ export class Game {
   drawNote(n, st, pps) {
     const c = this.ctx;
     const lane = n.label.h.lane;
-    const color = this.profile.lanes[lane].color;
-    const x = this.hwX + lane * this.laneW + this.laneW * 0.07;
-    const w = this.laneW * 0.86;
-    const headH = this.headH();
-    const yHead = this.hitY - (n.time - st) * pps;
-    const yTail = this.hitY - (n.time + n.dur - st) * pps;
+    const x = this.hwX + lane * this.laneW + this.laneW * 0.06;
+    const w = this.laneW * 0.88;
+    const yStart = this.hitY - (n.time - st) * pps; // bottom edge: play now
+    const yEnd = this.hitY - (n.time + n.dur - st) * pps;
+    const minH = 46;
+    const gap = 5;
+    let top = Math.min(yEnd + gap, yStart - minH);
+    let bottom = yStart;
     const missed = n.state === 'miss';
     const hit = n.state && !missed;
-    const L = n.label;
-    const showButtons = this.profile.showButtons;
-    const letter = showButtons ? L.main : localNoteName(L.main);
-    const sub = this.s.showNoteNames && showButtons ? localNoteName(L.sub) : '';
-
-    // Held notes: one tall solid block, label at the bottom where you play it.
-    if (n.beats >= 2) {
-      const top = yTail;
-      const bottom = hit ? Math.min(yHead + headH / 2, this.hitY) : yHead + headH / 2;
-      if (bottom > top) {
-        c.fillStyle = missed ? 'rgba(110,110,130,0.35)' : hexA(color, hit ? (n.sustaining ? 0.95 : 0.55) : 0.8);
-        roundRect(c, x, top, w, bottom - top, 12);
-        c.fill();
-        if (n.sustaining) {
-          c.strokeStyle = '#fff';
-          c.lineWidth = 2;
-          roundRect(c, x, top, w, bottom - top, 12);
-          c.stroke();
-        }
-      }
-      if (hit) return;
-      drawNoteHead(c, x, yHead - headH / 2, w, headH, { color, letter, mod: showButtons ? L.h.mod : null, sub, dim: missed });
-      return;
+    if (hit) {
+      // A played note is "eaten" by the hit line; long notes keep their remaining length.
+      if (n.beats < 2) return;
+      bottom = Math.min(bottom, this.hitY);
+      if (bottom - top < 6) return;
     }
-    if (hit) return;
-    drawNoteHead(c, x, yHead - headH / 2, w, headH, { color, letter, mod: showButtons ? L.h.mod : null, sub, dim: missed });
+    const L = n.label;
+    const buttons = this.profile.showButtons;
+    const letter = buttons ? L.main : localNoteName(L.main.replace(/-?\d+$/, ''));
+    const sub = this.s.showNoteNames && buttons ? localNoteName(L.sub) : '';
+    drawNoteBlock(c, x, top, w, bottom - top, {
+      letter: hit ? '' : letter,
+      mod: hit || !buttons ? null : L.h.mod,
+      sub: hit ? '' : sub,
+      dim: missed,
+      glow: n.sustaining,
+    });
   }
 }
 

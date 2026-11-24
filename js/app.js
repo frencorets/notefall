@@ -273,7 +273,8 @@ async function startGame() {
   $('#pauseMenu').hidden = true;
   if (game) game.stop();
   const s = currentLesson ? { ...settings, waitMode: true, speed: 1 } : settings;
-  game = new Game($('#gameCanvas'), currentSong, s, { onEnd: showResults });
+  const song = currentLesson ? { ...currentSong, title: t(`l${currentLesson}t`), composer: t('lessonN', { n: currentLesson }) } : currentSong;
+  game = new Game($('#gameCanvas'), song, s, { onEnd: showResults });
   game.start();
 }
 

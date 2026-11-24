@@ -1,12 +1,13 @@
 :root {
-  --bg: #0e0b26;
-  --bg2: #17123a;
-  --card: rgba(30, 24, 70, 0.72);
-  --line: rgba(255, 255, 255, 0.1);
-  --text: #f3f0ff;
-  --muted: #a9a3cc;
-  --accent: #ffc857;
-  --accent2: #ff7a8a;
+  --bg: #141416;
+  --bg2: #262628;
+  --card: rgba(18, 18, 20, 0.72);
+  --line: rgba(239, 234, 219, 0.22);
+  --text: #efeadb;
+  --muted: #a8a397;
+  --accent: #efeadb;
+  --accent2: #efeadb;
+  --ink: #151515;
   --ok: #7dffb0;
   --danger: #ff6b6b;
   --radius: 16px;
@@ -202,3 +203,36 @@ details.card[open] summary { margin-bottom: 12px; }
 .roll-label canvas { flex: none; }
 
 [hidden] { display: none !important; }
+
+
+/* --- Monochrome theme (ivory on charcoal) --- */
+#sky { background: radial-gradient(900px 700px at 50% 20%, #3a3a3d 0%, #1d1d1f 55%, #0f0f10 100%); }
+#sky::after { display: none; }
+h1, h2, .wstep h3, .grade, .stars { font-family: Georgia, 'Times New Roman', serif; letter-spacing: 0.3px; }
+h1 { font-size: 48px; font-weight: 700; }
+.logo { box-shadow: none; border-radius: 22px; }
+.btn { border-color: var(--line); background: rgba(239, 234, 219, 0.06); }
+.btn.primary { background: var(--accent); color: var(--ink); }
+.seg { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); }
+.seg button.on { background: var(--accent); color: var(--ink); }
+.coffee { background: rgba(239, 234, 219, 0.1); color: var(--text); }
+a { color: var(--text); }
+.tab.active { background: rgba(239, 234, 219, 0.14); }
+.dots { color: var(--text); }
+.badge { background: rgba(239, 234, 219, 0.16); }
+.check-row span { border-color: var(--text); color: var(--text); background: var(--ink); }
+.check-row span:nth-child(-n + 2) { border-radius: 12px; width: 64px; }
+.check-row span.ok { background: var(--text); border-color: var(--text); color: var(--ink); }
+.lesson.done .num { background: var(--text); color: var(--ink); }
+.stars { color: var(--text); }
+.grade { background: none; -webkit-background-clip: initial; background-clip: initial; color: var(--text); }
+.new-best { color: var(--text); }
+.tuner-hint { color: var(--text); }
+.level i { background: var(--text); }
+.cal-dots i.on { background: rgba(239, 234, 219, 0.5); }
+.cal-dots i.hit { background: var(--text); }
+.btn.rec.on { background: #c0392b; color: #fff; }
+.roll-label small { color: var(--text); }
+#toast { background: #232325; }
+.overlay { background: rgba(8, 8, 9, 0.78); }
+:root { --ok: #efeadb; }

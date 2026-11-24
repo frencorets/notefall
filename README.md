@@ -61,7 +61,7 @@ Each note is `[start beat, length in beats, pitch]`. The playable range is B4–
 
 The 5-button profile follows the remake's default layout: L = D5, R = F5, A = A5, Y = B5, X = D6 (sounding pitch). The D-pad bends a note by a half step and the left stick by a whole step; holding both gives three half steps. That makes 19 pitches, B4 to F6. Each note on the highway shows the easiest input: fewest buttons, with the D-pad preferred over the stick. Hold the bend first, then press the note button. Bends only work when playing freely; the game itself recognises songs from the five natural notes.
 
-Badges: ♯ = D-pad up, ♭ = D-pad down, ↑ = stick up, ↓ = stick down, ♯↑ / ♭↓ = both together. To change the mapping, edit `PROFILES` in `js/theory.js`. Scoring is unaffected because it only listens to pitch.
+Icons: plus sign + arrow = D-pad, circle + arrow = stick, both together = D-pad and stick. To change the mapping, edit `PROFILES` in `js/theory.js`. Scoring is unaffected because it only listens to pitch.
 
 Thanks to the community note chart at github.com/diacoviello/LoZ-Ocarina-Note-Charts, which this mapping was checked against.
 
